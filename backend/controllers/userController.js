@@ -1,11 +1,8 @@
 const User = require('../models/User');
 const ErrorHandler = require('../utils/errorHandler');
 const catchAsyncError = require('../middleware/catchAsyncError');
-const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const sendToken = require('../utils/jwtToken');
-dotenv.config({ path: 'backend/config/config.env' });
 
 
 
@@ -20,8 +17,6 @@ exports.registerUser = catchAsyncError(async (req, res, next) => {
 })
 
 
-
-
 /*******************************************************************LOGIN ************************************************ */
 exports.loginUser = catchAsyncError(async (req, res, next) => {
     const { email, password } = req.body;
@@ -34,7 +29,6 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
         return next(new ErrorHandler("Invalid email or password", 400));
-
     }
     // console.log(user);
     const passwordCompare = await bcrypt.compare(password, user.password);
@@ -43,19 +37,6 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
         success = false;
         return res.status(400).json({ success, 'error': "Please Enter correct Credentials" });
     }
-
-    //     const data = {
-    //      user:{
-    //        id: user._id
-    //      }
-    //    }
-    //    const authToken = jwt.sign(data, process.env.JWT_SECRET);
-    //     res.status(200).json({success:true,user,authToken})
     sendToken(user, 200, res);
 });
-
-
-
-
-
 
