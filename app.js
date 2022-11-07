@@ -18,7 +18,6 @@ app.use(express.json());
 
 //************************SECURITY CHECKS************************************ */
 app.use(helmet());
-
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -79,7 +78,7 @@ const config = {
 };
 
 const AUTH_OPTIONS = {
-  callbackURL: "https://localhost:3000/auth/google/callback",
+  callbackURL: "/auth/google/callback",
   clientID: config.CLIENT_ID,
   clientSecret: config.CLIENT_SECRET,
 };

@@ -38,7 +38,7 @@ mongoose.connect(DB).then(() => {
 // });
 
 const server = app.listen(process.env.PORT, () => {
-  console.log(`server is running on https://localhost:${process.env.PORT}`);
+  console.log(`server is running on http://localhost:${process.env.PORT}`);
 });
 
 // console.log(youtube);
