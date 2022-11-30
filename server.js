@@ -9,7 +9,7 @@ const options = {
   key: fs.readFileSync("ssl/key.pem"),
   cert: fs.readFileSync("ssl/cert.pem"),
 };
-// const dotenv = require('dotenv');  USED BELOW IN IF CASE
+//const dotenv = require("dotenv"); //USED BELOW IN IF CASE
 //const connectToMongo = require('./config/database');
 
 /************************************HANDLING UNCOUGHT ERROR/EXCEPTION ************************************************/
@@ -38,7 +38,7 @@ mongoose.connect(DB).then(() => {
 // });
 
 const server = https.createServer(options, app).listen(process.env.PORT, () => {
-  console.log(`server is running on https://localhost:${process.env.PORT}`);
+  console.log(`server is running on http://localhost:${process.env.PORT}`);
 });
 
 // console.log(youtube);

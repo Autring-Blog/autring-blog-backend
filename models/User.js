@@ -36,10 +36,6 @@ const UserSchema = new Schema({
       message: "Please confirm your password",
     },
   },
-  category: {
-    type: String,
-    default: "email",
-  },
   phone: {
     type: Number,
   },

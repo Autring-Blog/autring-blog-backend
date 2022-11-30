@@ -5,10 +5,7 @@ const blogSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  photo: {
-    type: String,
-    required: true,
-  },
+  photo: [String],
   mainHeading: {
     type: String,
     required: true,

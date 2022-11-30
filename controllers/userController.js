@@ -85,7 +85,7 @@ exports.getAllUser = catchAsyncError(async (req, res, next) => {
   const users = await User.find();
 
   if (!users) {
-    new ErrorHandler("No Blog Found, Try Again..", 404);
+    return next(new ErrorHandler("No Blog Found, Try Again..", 404));
   }
 
   res.status(200).json({

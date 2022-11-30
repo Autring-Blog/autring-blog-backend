@@ -1,19 +1,20 @@
 const catchAsyncError = require("./catchAsyncError");
-const ErrorHandler = require("../utils/Errorhandler");
+const ErrorHandler = require("./../utils/errorHandler");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 
 exports.isUserAuthenticated = catchAsyncError(async (req, res, next) => {
   let token;
-  if (req.cookies.jwt) {
-    token = req.cookies.jwt;
-  } else if (
-    req.headers.authorization ||
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
+  if (req.cookies.autringblogtoken) {
+    token = req.cookies.autringblogtoken;
   }
+  // else if (
+  //   req.headers.authorization ||
+  //   req.headers.authorization.startsWith("Bearer")
+  // ) {
+  //   token = req.headers.authorization.split(" ")[1];
+  // }
 
   if (!token) {
     return next(new ErrorHandler("You dont have a pass to access", 404));
