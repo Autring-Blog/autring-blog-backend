@@ -68,7 +68,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(fileUpload());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-//************************Social Common*****************************************/
+
+//***********************Google Auth MiddleWare**********************/
 const cookieSession = require("cookie-session");
 const passport = require("passport");
 passport.serializeUser(function (user, done) {
@@ -80,8 +81,6 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (obj, done) {
   done(null, obj);
 });
-
-//***********************Google Auth MiddleWare**********************/
 const googleRouter = require("./routes/googleRouter");
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -138,7 +137,11 @@ app.use(googleRouter);
 const blog = require("./routes/blogRoute");
 const user = require("./routes/userRoute");
 const newsLetterUser = require("./routes/newsLetterUserRoute");
-
+app.use((req, res, next) => {
+  //console.log(req.cookies);
+  console.log(req.headers);
+  next();
+});
 //PRODUCT ROUTE
 app.use("/api/v1", user);
 app.use("/api/v1", blog);
