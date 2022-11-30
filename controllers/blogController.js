@@ -2,41 +2,53 @@ const Blog = require("./../models/Blog");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncError = require("../middleware/catchAsyncError");
 const multer = require("multer");
+const multerS3 = require("multer-s3");
+//const aws = require("aws-sdk");
+const { S3Client } = require("@aws-sdk/client-s3");
 
-const multerStroge = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/img");
+const s3 = new S3Client({
+  region: process.env.S3_BUCKET_REGION,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    region: process.env.S3_BUCKET_REGION,
   },
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split("/")[1];
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-    //cb(null, `user-${Date.now()}.${ext}`);
-  },
+  sslEnabled: false,
+  s3ForcePathStyle: true,
+  signatureVersion: "v4",
+  ContentType: "image/jpeg",
 });
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new Error("wrong file format upload"), false);
-  }
-};
+
 const upload = multer({
-  storage: multerStroge,
-  fileFilter: multerFilter,
+  storage: multerS3({
+    s3: s3,
+    bucket: "photo-upload-banner",
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      //const ext = file.mimetype.split("/")[1];
+      cb(null, `user-${req.user.id}-${Date.now()}.jpeg`);
+    },
+  }),
 });
 
-exports.uploadBanner = upload.single("photo");
-
+exports.uploadBanner = upload.array("photo", 3);
 exports.postBlog = catchAsyncError(async (req, res, next) => {
+  const image = [...req.files];
+  const url = image.map(
+    (el) => `https://photo-upload-banner.s3.us-east-1.amazonaws.com/${el.key}`
+  );
+
   const file = {
     ...req.body,
-    photo: req.file.filename,
+    photo: url,
   };
-
+  // console.log(file);
   const blog = await Blog.create(file);
 
   if (!blog) {
-    new ErrorHandler("No post will created", 404);
+    return next(new ErrorHandler("No post will created", 404));
   }
 
   res.status(200).json({
@@ -50,7 +62,7 @@ exports.getAllBlog = catchAsyncError(async (req, res, next) => {
   const blog = await Blog.find();
 
   if (!blog) {
-    new ErrorHandler("No Blog Found, Try Again..", 404);
+    return next(new ErrorHandler("No Blog Found, Try Again..", 404));
   }
 
   res.status(200).json({
@@ -65,7 +77,7 @@ exports.getPerticularBlog = catchAsyncError(async (req, res, next) => {
   const blog = await Blog.findById(req.params.id);
 
   if (!blog) {
-    new ErrorHandler("No Blog Found, Try Again..", 404);
+    return next(new ErrorHandler("No Blog Found, Try Again..", 404));
   }
 
   res.status(200).json({
@@ -77,7 +89,17 @@ exports.getPerticularBlog = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateBlog = catchAsyncError(async (req, res, next) => {
-  const blog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+  const image = [...req.files];
+  const url = image.map(
+    (el) => `https://photo-upload-banner.s3.us-east-1.amazonaws.com/${el.key}`
+  );
+
+  const file = {
+    ...req.body,
+    photo: url,
+  };
+
+  const blog = await Blog.findByIdAndUpdate(req.params.id, file, {
     new: true,
     runValidators: true,
   });

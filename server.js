@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const app = require("./app");
 
 const fs = require("fs");
-//const http = require("http");
+const https = require("https");
 
-// const options = {
-//   key: fs.readFileSync("ssl/key.pem"),
-//   cert: fs.readFileSync("ssl/cert.pem"),
-// };
-// const dotenv = require('dotenv');  USED BELOW IN IF CASE
+const options = {
+  key: fs.readFileSync("ssl/key.pem"),
+  cert: fs.readFileSync("ssl/cert.pem"),
+};
+//const dotenv = require("dotenv"); //USED BELOW IN IF CASE
 //const connectToMongo = require('./config/database');
 
 /************************************HANDLING UNCOUGHT ERROR/EXCEPTION ************************************************/
@@ -37,7 +37,7 @@ mongoose.connect(DB).then(() => {
 //   console.log(`server is running on https://localhost:${process.env.PORT}`);
 // });
 
-const server = app.listen(process.env.PORT, () => {
+const server = https.createServer(options, app).listen(process.env.PORT, () => {
   console.log(`server is running on http://localhost:${process.env.PORT}`);
 });
 

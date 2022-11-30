@@ -19,6 +19,7 @@ router.get(
   (req, res) => {
     res.status(200).json({
       status: "success",
+
       message: "okk",
     });
     console.log("google called us back");
@@ -37,6 +38,11 @@ router.get("/auth/logout", (req, res) => {
 
 router.get("/failure", (req, res) => {
   return res.send("something went wrong");
+});
+router.get("/success", (req, res) => {
+  return res.status(200).json({
+    name: req.user._json.name,
+  });
 });
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const express = require("express");
 const GoogleUser = require("./models/google");
-
+const cors = require("cors");
 const app = express();
 const path = require("path");
 const errorMiddleware = require("./middleware/error");
@@ -13,8 +13,20 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 //const fileUpload = require("express-fileupload");
 require("dotenv").config({ path: "config/config.env" });
-
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", true);
+  next();
+});
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(express.json());
+
+var corsOptions = {
+  origin: "http://localhost:3000",
+  optionsSuccessStatus: 200,
+};
+
+//app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 //************************SECURITY CHECKS************************************ */
 app.use(helmet());
@@ -50,7 +62,7 @@ app.use(xss());
 
 //******************************************************************************* */
 
-app.use(express.static(path.join(__dirname, "./public")));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(fileUpload());
@@ -60,7 +72,9 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 const cookieSession = require("cookie-session");
 const passport = require("passport");
 passport.serializeUser(function (user, done) {
-  done(null, user.id);
+  console.log(user);
+  console.log(user._json.name);
+  done(null, user);
 });
 
 passport.deserializeUser(function (obj, done) {
@@ -78,7 +92,7 @@ const config = {
 };
 
 const AUTH_OPTIONS = {
-  callbackURL: "/auth/google/callback",
+  callbackURL: "https://35.174.115.137:3006/auth/google/callback",
   clientID: config.CLIENT_ID,
   clientSecret: config.CLIENT_SECRET,
 };
@@ -114,7 +128,7 @@ app.use(passport.session());
 
 app.use(googleRouter);
 
-// 
+//
 //**************************************Common MiddleWare Of Passport*************************/
 app.use(passport.initialize());
 app.use(passport.session());
@@ -123,10 +137,12 @@ app.use(googleRouter);
 /**************************************************Route Imports*****************************************************************************/
 const blog = require("./routes/blogRoute");
 const user = require("./routes/userRoute");
+const newsLetterUser = require("./routes/newsLetterUserRoute");
 
 //PRODUCT ROUTE
 app.use("/api/v1", user);
 app.use("/api/v1", blog);
+app.use("/api/v1", newsLetterUser);
 
 /*************************************************** MIDDLEWARE*******************************************************/
 app.use(errorMiddleware);
