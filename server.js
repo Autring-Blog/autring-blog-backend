@@ -33,13 +33,13 @@ const DB = process.env.DB_URI.replace(
 mongoose.connect(DB).then(() => {
   console.log("DB Connection Successful");
 });
-// const server = app.listen(process.env.PORT, () => {
-//   console.log(`server is running on https://localhost:${process.env.PORT}`);
-// });
-
-const server = https.createServer(options, app).listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
   console.log(`server is running on http://localhost:${process.env.PORT}`);
 });
+
+// const server = https.createServer(options, app).listen(process.env.PORT, () => {
+//   console.log(`server is running on https://localhost:${process.env.PORT}`);
+// });
 
 // console.log(youtube);
 process.on("unhandledRejection", (err) => {

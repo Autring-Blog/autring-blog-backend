@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(express.json());
 
 var corsOptions = {
+  Credential: true,
   origin: "http://localhost:3000",
   optionsSuccessStatus: 200,
 };
@@ -29,26 +30,40 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 //************************SECURITY CHECKS************************************ */
-app.use(helmet());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'", "data:", "blob:"],
+// app.use(helmet());
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       defaultSrc: ["'self'", "data:", "blob:"],
 
-      fontSrc: ["'self'", "https:", "data:"],
+//       fontSrc: ["'self'", "https:", "data:"],
 
-      scriptSrc: ["'self'", "unsafe-inline"],
+//       scriptSrc: ["'self'", "unsafe-inline"],
 
-      scriptSrc: ["'self'", "https://*.cloudflare.com"],
+//       scriptSrc: ["'self'", "https://*.cloudflare.com"],
 
-      scriptSrcElem: ["'self'", "https:", "https://*.cloudflare.com"],
+//       scriptSrcElem: ["'self'", "https:", "https://*.cloudflare.com"],
 
-      styleSrc: ["'self'", "https:", "unsafe-inline"],
+//       styleSrc: ["'self'", "https:", "unsafe-inline"],
 
-      connectSrc: ["'self'", "data", "https://*.cloudflare.com"],
-    },
-  })
-);
+//       connectSrc: ["'self'", "data", "https://*.cloudflare.com"],
+//     },
+//   })
+// );
+
+app.use(helmet.contentSecurityPolicy());
+app.use(helmet.crossOriginEmbedderPolicy());
+app.use(helmet.dnsPrefetchControl());
+app.use(helmet.expectCt());
+app.use(helmet.hidePoweredBy());
+app.use(helmet.hsts());
+app.use(helmet.ieNoOpen());
+
+app.use(helmet.originAgentCluster());
+app.use(helmet.permittedCrossDomainPolicies());
+app.use(helmet.referrerPolicy());
+app.use(helmet.xssFilter());
+
 const limiter = rateLimit({
   max: 50,
   windowMs: 60 * 60 * 1000,
@@ -137,11 +152,10 @@ app.use(googleRouter);
 const blog = require("./routes/blogRoute");
 const user = require("./routes/userRoute");
 const newsLetterUser = require("./routes/newsLetterUserRoute");
-app.use((req, res, next) => {
-  //console.log(req.cookies);
-  console.log(req.headers);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req.headers);
+//   next();
+// });
 //PRODUCT ROUTE
 app.use("/api/v1", user);
 app.use("/api/v1", blog);
