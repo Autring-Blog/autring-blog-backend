@@ -29,8 +29,14 @@ router
     "/updateblog/:id",
     authenticated.isUserAuthenticated,
     authenticated.authorizeRoles("admin"),
-    blogController.uploadBanner,
     blogController.updateBlog
+  )
+  .patch(
+    "/updateblogphoto/:id",
+    authenticated.isUserAuthenticated,
+    authenticated.authorizeRoles("admin"),
+    blogController.uploadBanner,
+    blogController.updateBlogPhoto
   );
 router.delete(
   "/deleteblog/:id",

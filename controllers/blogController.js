@@ -89,13 +89,31 @@ exports.getPerticularBlog = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateBlog = catchAsyncError(async (req, res, next) => {
+  const file = {
+    ...req.body,
+  };
+
+  const blog = await Blog.findByIdAndUpdate(req.params.id, file, {
+    new: true,
+    runValidators: true,
+  });
+  if (!blog) {
+    return next(new ErrorHandler("No document find with this Id", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      blog,
+    },
+  });
+});
+exports.updateBlogPhoto = catchAsyncError(async (req, res, next) => {
   const image = [...req.files];
   const url = image.map(
     (el) => `https://photo-upload-banner.s3.us-east-1.amazonaws.com/${el.key}`
   );
 
   const file = {
-    ...req.body,
     photo: url,
   };
 

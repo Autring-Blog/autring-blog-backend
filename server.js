@@ -41,7 +41,6 @@ const server = app.listen(process.env.PORT, () => {
 //   console.log(`server is running on https://localhost:${process.env.PORT}`);
 // });
 
-// console.log(youtube);
 process.on("unhandledRejection", (err) => {
   console.log(`Error: ${err.message}`);
   console.log("Shutting down the server due to unhandled Promise");
